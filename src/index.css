@@ -17,8 +17,19 @@ body {
     margin-bottom: 10px;
   }
   .test {
-      background-color: pink;
       height: 100%;
+  }
+  .red {
+    background-color: pink;
+  }
+  .green {
+    background-color: lightgreen;
+  }
+  .blue {
+    background-color: lightskyblue;
+  }
+  .standard {
+    background-color: grey;
   }
   .square {
     background: #fff;

@@ -28,33 +28,76 @@ class Square extends React.Component {
         this.state = {
           squares: Array(20),
           falling: [5, 0],
+          piece: 1
         };
         for (let index = 0; index < this.state.squares.length; index++) {
           this.state.squares[index] = Array(10).fill(null)
         }
         //this.setState({falling:[5, 0]})
       }
+      mycollection = [[[0,0]], [[0,0], [0,1], [1,1]], [[0,0], [1,0]], [[-1, 0], [0,0], [1,0], [2,0]]]
+      colors = ["red", "green", "blue", "grey", "grey", "grey", "grey"]
       thingy = 0
       mover() {
           const x = this.state.falling[0];
           const y = this.state.falling[1];
           if (x != null && y != null) {
-            if (y < 19 && this.state.squares[y + 1][x] == null) {
-                if (this.state.squares[y + 1][x + this.thingy] != null) {
-                  this.thingy = 0
-                }
-                const newsquares = this.state.squares.slice();
-                newsquares[y][x] =  null
-                newsquares[y+1][x+this.thingy] = <div className="test"></div>
-                
-                this.setState({squares: newsquares})
-                this.setState({falling: [x + this.thingy, y + 1]})
-                this.thingy = 0
+            const oldPositions = this.mycollection[this.state.piece].map((arr) => [arr[0] + x, arr[1] + y])
+            let left = true
+            let right = true 
+            let bottom = true
+            const newsquares = this.state.squares.slice();
+            for (let index = 0; index < oldPositions.length; index++) {
+              const e = oldPositions[index];
+              newsquares[e[1]][e[0]] =  null
+            }
+            for (let index = 0; index < oldPositions.length; index++) {
+              const e = oldPositions[index];
+              if( this.state.squares[e[1]][e[0]-1] !== null) left = false
+              if( this.state.squares[e[1]][e[0]+1] !== null) right = false
+              if((e[1]+1)>19 || this.state.squares[e[1]+1][e[0]] !== null) bottom = false
+            }
+            if (this.thingy === -1 && left) {
+              const newPositions = oldPositions.map((arr) => [arr[0] - 1, arr[1]])
+              for (let index = 0; index < newPositions.length; index++) {
+                const f = newPositions[index];
+                newsquares[f[1]][f[0]] = <div className={"test " + this.colors[this.state.piece]}></div>
+              }
+              this.setState({squares: newsquares})
+              this.setState({falling: [x + this.thingy, y]})
+              this.thingy = 0
+            }
+            else if (this.thingy === 1 && right) {
+              const newPositions = oldPositions.map((arr) => [arr[0] + 1, arr[1]])
+              for (let index = 0; index < newPositions.length; index++) {
+                const f = newPositions[index];
+                newsquares[f[1]][f[0]] = <div className={"test " + this.colors[this.state.piece]}></div>
+              }
+              this.setState({squares: newsquares})
+              this.setState({falling: [x + this.thingy, y]})
+              this.thingy = 0
             }
             else {
+              console.log("here")
+              if (y < 19 && bottom) {
+                const newPositions = oldPositions.map((arr) => [arr[0], arr[1] + 1])
+                for (let index = 0; index < newPositions.length; index++) {
+                  const f = newPositions[index];
+                  newsquares[f[1]][f[0]] = <div className={"test " + this.colors[this.state.piece]}></div>
+                }
+                this.setState({squares: newsquares})
+                this.setState({falling: [x, y + 1]})
+              }
+              else {
+                for (let index = 0; index < oldPositions.length; index++) {
+                  const f = oldPositions[index];
+                  newsquares[f[1]][f[0]] = <div className={"test " + this.colors[this.state.piece]}></div>
+                }
                 this.setState({falling: [null, null]})
+                console.log(this.state.falling)
                 this.addblock()
                 this.checkRow()
+              }
             }
           }
       } 
@@ -78,12 +121,12 @@ class Square extends React.Component {
           }
       }
       addblock() {
-          const place = Math.floor(Math.random() * 10)
+          const piece = Math.floor(Math.random() * 4)
           if (this.state.falling[0] == null && this.state.falling[1] == null) {
-            this.setState({falling: [place, 0]})
+            this.setState({falling: [5, 0], piece: piece})
           } 
       } 
-      interval = setInterval(this.mover.bind(this), 100);
+      interval = setInterval(this.mover.bind(this), 500);
       pause() {
           clearInterval(this.interval)
       }
