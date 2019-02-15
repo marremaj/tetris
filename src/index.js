@@ -28,15 +28,23 @@ class Square extends React.Component {
         this.state = {
           squares: Array(20),
           falling: [5, 0],
-          piece: 1
+          piece: 3,
+          points: 0,
         };
         for (let index = 0; index < this.state.squares.length; index++) {
           this.state.squares[index] = Array(10).fill(null)
         }
         //this.setState({falling:[5, 0]})
       }
-      mycollection = [[[0,0]], [[0,0], [0,1], [1,1]], [[0,0], [1,0]], [[-1, 0], [0,0], [1,0], [2,0]]]
-      colors = ["red", "green", "blue", "grey", "grey", "grey", "grey"]
+      mycollection = [
+        [[0,0], [1,0], [1,1], [1,2]], 
+        [[0,0], [0,1], [1,1], [1,2]], 
+        [[0,0], [1,0], [2,0], [2,1]], 
+        [[-1, 0], [0,0], [1,0], [2,0]],
+        [[0,0], [1,0], [1,1], [0,1]],
+        [[-1, 0], [0,0], [1,0], [0,1]]
+      ]
+      colors = ["red", "green", "blue", "standard", "standard", "standard", "standard"]
       thingy = 0
       mover() {
           const x = this.state.falling[0];
@@ -78,7 +86,6 @@ class Square extends React.Component {
               this.thingy = 0
             }
             else {
-              console.log("here")
               if (y < 19 && bottom) {
                 const newPositions = oldPositions.map((arr) => [arr[0], arr[1] + 1])
                 for (let index = 0; index < newPositions.length; index++) {
@@ -94,7 +101,6 @@ class Square extends React.Component {
                   newsquares[f[1]][f[0]] = <div className={"test " + this.colors[this.state.piece]}></div>
                 }
                 this.setState({falling: [null, null]})
-                console.log(this.state.falling)
                 this.addblock()
                 this.checkRow()
               }
@@ -110,6 +116,7 @@ class Square extends React.Component {
                   if (jelem == null) counter++
               }
               if (counter === 0) {
+                this.setState({"points": this.state.points+1})
                 const newsquares = this.state.squares.slice();
                 newsquares[index] =  Array(10).fill(null)
                 for (let k = index; k > 0; k--) {
@@ -121,12 +128,12 @@ class Square extends React.Component {
           }
       }
       addblock() {
-          const piece = Math.floor(Math.random() * 4)
+          const piece = Math.floor(Math.random() * 6)
           if (this.state.falling[0] == null && this.state.falling[1] == null) {
             this.setState({falling: [5, 0], piece: piece})
           } 
       } 
-      interval = setInterval(this.mover.bind(this), 500);
+      interval = setInterval(this.mover.bind(this), 300);
       pause() {
           clearInterval(this.interval)
       }
@@ -170,6 +177,7 @@ class Square extends React.Component {
       const status = 'Next player: X';
       return (
         <div onKeyDown={this.move}>
+          <h1>Points: <span>{this.state.points}</span></h1>
           <button onClick={this.pause.bind(this)}>Click</button>
           <div className="status">{status}</div>
           {this.makeBoard(20)}
