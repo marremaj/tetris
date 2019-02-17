@@ -28,7 +28,8 @@ class Square extends React.Component {
         this.state = {
           squares: Array(20),
           falling: [5, 0],
-          piece: 3,
+          prevRot: 0,
+          piece: 0,
           points: 0,
         };
         for (let index = 0; index < this.state.squares.length; index++) {
@@ -42,21 +43,30 @@ class Square extends React.Component {
         [[0,0], [1,0], [2,0], [2,1]], 
         [[-1, 0], [0,0], [1,0], [2,0]],
         [[0,0], [1,0], [1,1], [0,1]],
-        [[-1, 0], [0,0], [1,0], [0,1]]
+        [[-1, 0], [0,0], [1,0], [0,1]],
+        [[0,0], [0,1], [0,2], [0,3]]
       ]
       colors = ["red", "green", "blue", "standard", "standard", "standard", "standard"]
       thingy = 0
+      rot = 0
       mover() {
           const x = this.state.falling[0];
           const y = this.state.falling[1];
           if (x != null && y != null) {
-            const oldPositions = this.mycollection[this.state.piece].map((arr) => [arr[0] + x, arr[1] + y])
+            let oldPositions = []
+            const oldRotation = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
+            if (this.rot === 0) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
+            else if (this.rot === 1) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
+            else if (this.rot === 3) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
+            else oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
             let left = true
             let right = true 
             let bottom = true
             const newsquares = this.state.squares.slice();
-            for (let index = 0; index < oldPositions.length; index++) {
-              const e = oldPositions[index];
+            console.log("---------")
+            for (let index = 0; index < oldRotation.length; index++) {
+              const e = oldRotation[index];
+              console.log(e)
               newsquares[e[1]][e[0]] =  null
             }
             for (let index = 0; index < oldPositions.length; index++) {
@@ -104,6 +114,8 @@ class Square extends React.Component {
                 this.addblock()
                 this.checkRow()
               }
+              this.setState({prevRot: this.rot})
+
             }
           }
       } 
@@ -128,7 +140,9 @@ class Square extends React.Component {
           }
       }
       addblock() {
-          const piece = Math.floor(Math.random() * 6)
+          this.rot = 0
+          this.setState({prevRot: 0})
+          const piece = Math.floor(Math.random() * 7)
           if (this.state.falling[0] == null && this.state.falling[1] == null) {
             this.setState({falling: [5, 0], piece: piece})
           } 
@@ -136,6 +150,12 @@ class Square extends React.Component {
       interval = setInterval(this.mover.bind(this), 300);
       pause() {
           clearInterval(this.interval)
+      }
+      rotationCalc(arr, rot, x, y) {
+        if (rot === 0) return [arr[0] + x, arr[1] + y]
+        else if (rot === 1) return [-arr[1] + x , arr[0] + y]
+        else if (rot === 3) return [arr[1] + x , -arr[0] + y]
+        else return [-arr[0] + x , -arr[1] + y]
       }
       handleClick(i) {
         // const newsquares = this.state.squares.slice();
@@ -172,14 +192,15 @@ class Square extends React.Component {
         else if (event.key === 'ArrowLeft' && this.state.falling[0] !== null && this.state.falling[0] > 0) {
             this.thingy = -1
         }
+        else if (event.key === ' ' && this.state.falling[0] !== null) {
+          this.rot = (this.rot+1)%4
+      }
     }
     render() {
-      const status = 'Next player: X';
       return (
         <div onKeyDown={this.move}>
           <h1>Points: <span>{this.state.points}</span></h1>
           <button onClick={this.pause.bind(this)}>Click</button>
-          <div className="status">{status}</div>
           {this.makeBoard(20)}
         </div>
       );
