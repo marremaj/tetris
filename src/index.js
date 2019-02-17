@@ -29,7 +29,7 @@ class Square extends React.Component {
           squares: Array(20),
           falling: [5, 0],
           prevRot: 0,
-          piece: 0,
+          piece: 2,
           points: 0,
         };
         for (let index = 0; index < this.state.squares.length; index++) {
@@ -40,13 +40,13 @@ class Square extends React.Component {
       mycollection = [
         [[0,0], [1,0], [1,1], [1,2]], 
         [[0,0], [0,1], [1,1], [1,2]], 
+        [[0,0],[-1,0],[0,1],[1,1]],
         [[0,0], [1,0], [2,0], [2,1]], 
         [[-1, 0], [0,0], [1,0], [2,0]],
         [[0,0], [1,0], [1,1], [0,1]],
         [[-1, 0], [0,0], [1,0], [0,1]],
-        [[0,0], [0,1], [0,2], [0,3]]
       ]
-      colors = ["red", "green", "blue", "standard", "standard", "standard", "standard"]
+      colors = ["blue", "red", "orange", "purple", "turquoise", "yellow", "green"]
       thingy = 0
       rot = 0
       mover() {
@@ -54,11 +54,10 @@ class Square extends React.Component {
           const y = this.state.falling[1];
           if (x != null && y != null) {
             let oldPositions = []
+            //rotations buggy
             const oldRotation = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
-            if (this.rot === 0) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
-            else if (this.rot === 1) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
-            else if (this.rot === 3) oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
-            else oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.state.prevRot, x, y))
+            oldPositions = this.mycollection[this.state.piece].map((arr) => this.rotationCalc(arr, this.rot, x, y))
+            
             let left = true
             let right = true 
             let bottom = true
@@ -68,6 +67,13 @@ class Square extends React.Component {
               const e = oldRotation[index];
               console.log(e)
               newsquares[e[1]][e[0]] =  null
+            }
+            for (let index = 0; index < oldPositions.length; index++) {
+              const e = oldPositions[index];
+              if( this.state.squares[e[1]][e[0]] !== null) {
+                oldPositions = oldRotation
+                this.rot = this.state.prevRot
+              }
             }
             for (let index = 0; index < oldPositions.length; index++) {
               const e = oldPositions[index];
@@ -185,16 +191,18 @@ class Square extends React.Component {
         return boeard;
     }
     move = (event) => {
-
-        if (event.key === 'ArrowRight' && this.state.falling[0] !== null && this.state.falling[0] < 9) {
+      if (this.state.falling[0] !== null) {
+        if (event.key === 'ArrowRight' && this.state.falling[0] < 9) {
             this.thingy = 1
         }
-        else if (event.key === 'ArrowLeft' && this.state.falling[0] !== null && this.state.falling[0] > 0) {
+        else if (event.key === 'ArrowLeft' && this.state.falling[0] > 0) {
             this.thingy = -1
         }
-        else if (event.key === ' ' && this.state.falling[0] !== null) {
+        //change rotation variable on space
+        else if (event.key === ' ') {
           this.rot = (this.rot+1)%4
       }
+    }
     }
     render() {
       return (
@@ -212,7 +220,7 @@ class Square extends React.Component {
       return (
         <div className="game">
           <div className="game-board">
-            <Board />
+            <Board class="board"/>
           </div>
           <div className="game-info">
             

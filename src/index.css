@@ -18,26 +18,36 @@ body {
   }
   .test {
       height: 100%;
+      border: 1px solid #333;
+      box-sizing: border-box;
   }
   .red {
-    background-color: pink;
+    background-color: #F15151;
   }
   .green {
-    background-color: lightgreen;
+    background-color: #6EC16B;
   }
   .blue {
-    background-color: lightskyblue;
+    background-color: #65ECE8;
   }
-  .standard {
-    background-color: grey;
+  .yellow {
+    background-color:  #EBEC65;
+  }
+  .orange {
+    background-color: #F9B561;
+  }
+  .purple {
+    background-color: #BE8AE3;
+  }
+  .turquoise {
+    background-color: #6DADE7;
   }
   .square {
     background: #fff;
-    border: 1px solid #999;
+    border:1px solid #444;
     float: left;
     font-size: 24px;
     font-weight: bold;
-    line-height: 34px;
     height: 25px;
     margin-right: -1px;
     margin-top: -1px;
@@ -49,11 +59,6 @@ body {
   .square:focus {
     outline: none;
   }
-  
-  .kbd-navigation .square:focus {
-    background: #ddd;
-  }
-  
   .game {
     display: flex;
     flex-direction: row;
