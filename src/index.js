@@ -62,10 +62,8 @@ class Square extends React.Component {
             let right = true 
             let bottom = true
             const newsquares = this.state.squares.slice();
-            console.log("---------")
             for (let index = 0; index < oldRotation.length; index++) {
               const e = oldRotation[index];
-              console.log(e)
               newsquares[e[1]][e[0]] =  null
             }
             for (let index = 0; index < oldPositions.length; index++) {
@@ -134,7 +132,7 @@ class Square extends React.Component {
                   if (jelem == null) counter++
               }
               if (counter === 0) {
-                this.setState({"points": this.state.points+1})
+                this.props.points()
                 const newsquares = this.state.squares.slice();
                 newsquares[index] =  Array(10).fill(null)
                 for (let k = index; k > 0; k--) {
@@ -147,6 +145,7 @@ class Square extends React.Component {
       }
       addblock() {
           this.rot = 0
+          
           this.setState({prevRot: 0})
           const piece = Math.floor(Math.random() * 7)
           if (this.state.falling[0] == null && this.state.falling[1] == null) {
@@ -156,6 +155,9 @@ class Square extends React.Component {
       interval = setInterval(this.mover.bind(this), 300);
       pause() {
           clearInterval(this.interval)
+      }
+      unpause() {
+        this.interval = setInterval(this.mover.bind(this), 300);
       }
       rotationCalc(arr, rot, x, y) {
         if (rot === 0) return [arr[0] + x, arr[1] + y]
@@ -201,31 +203,45 @@ class Square extends React.Component {
         //change rotation variable on space
         else if (event.key === ' ') {
           this.rot = (this.rot+1)%4
+        }
+        else if (event.key === 'p') {
+          this.pause()
+        } 
+        else if (event.key === 'u') {
+          this.unpause()
+        }
       }
-    }
     }
     render() {
       return (
         <div onKeyDown={this.move}>
-          <h1>Points: <span>{this.state.points}</span></h1>
-          <button onClick={this.pause.bind(this)}>Click</button>
-          {this.makeBoard(20)}
+          <div id="theGame">
+            <div id="matrix">
+              {this.makeBoard(20)}
+            </div>
+          </div>
         </div>
       );
     }
   }
   
   class Game extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        points: 0,
+      };
+      this.addPoints = this.addPoints.bind(this)
+    }
+    addPoints() {
+      this.setState({points:this.state.points+1})
+    }
     render() {
       return (
         <div className="game">
+          <h1>TETRIS {this.state.points}</h1>
           <div className="game-board">
-            <Board class="board"/>
-          </div>
-          <div className="game-info">
-            
-            <div>{/* status */}</div>
-            <ol>{/* TODO */}</ol>
+            <Board class="board" points={this.addPoints}/>
           </div>
         </div>
       );

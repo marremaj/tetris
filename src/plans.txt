@@ -1,0 +1,10 @@
+Plans:
+- Design better
+- Start button
+- Pause button
+- Losing
+- restart
+- game instructions
+- Next shape
+- Organize my code
+- (Highscore?)

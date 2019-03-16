@@ -55,7 +55,17 @@ body {
     text-align: center;
     width: 25px;
   }
-  
+  #theGame {
+    border: 10px solid black;
+  }
+  #matrix {
+    display: inline-block;
+  }
+  #controlls {
+    height: 100%;
+    width:200px;
+    display: inline-block;
+  }
   .square:focus {
     outline: none;
   }
