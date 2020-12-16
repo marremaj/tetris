@@ -10,6 +10,8 @@ export default class Board extends React.Component {
       prevRot: 0, //current rotation {0,3}
       piece: 4, //index of piece type
       points: 0, //current amount of points
+      interval: null,
+      paused: true,
     }
     for (let index = 0; index < this.state.squares.length; index++) {
       this.state.squares[index] = Array(10).fill(null)
@@ -73,7 +75,6 @@ export default class Board extends React.Component {
       const oldRotation = this.mycollection[this.state.piece].map((arr) =>
         this.rotationCalc(arr, this.state.prevRot, x, y)
       ) // location of current squares center block (0,0)
-      console.log(oldRotation)
 
       oldPositions = this.mycollection[this.state.piece].map((arr) =>
         this.rotationCalc(arr, current_rot, x, y)
@@ -81,14 +82,13 @@ export default class Board extends React.Component {
 
       let left = true // able to move to the left
       let right = true // able to move to the right
-      let bottom = true // able to move down 
+      let bottom = true // able to move down
       const newsquares = this.state.squares.slice() // create copy of boardsquares
 
       // deletes old shape
-      for (let index = 0; index < oldRotation.length; index++) { 
+      for (let index = 0; index < oldRotation.length; index++) {
         const e = oldRotation[index]
-        if (e[1] >= 0)
-          newsquares[e[1]][e[0]] = null
+        if (e[1] >= 0) newsquares[e[1]][e[0]] = null
       }
 
       // if not able to rotate, dont rotate
@@ -124,7 +124,7 @@ export default class Board extends React.Component {
         }
         this.setState({ squares: newsquares })
         this.setState({ falling: [x + current_hmov, y] })
-      } 
+      }
       // if possible move to right
       else if (current_hmov === 1 && right) {
         const newPositions = oldPositions.map((arr) => [arr[0] + 1, arr[1]])
@@ -136,7 +136,6 @@ export default class Board extends React.Component {
         }
         this.setState({ squares: newsquares })
         this.setState({ falling: [x + current_hmov, y] })
-
       } else {
         if (y < 19 && bottom) {
           const newPositions = oldPositions.map((arr) => [arr[0], arr[1] + 1])
@@ -151,9 +150,16 @@ export default class Board extends React.Component {
         } else {
           for (let index = 0; index < oldPositions.length; index++) {
             const f = oldPositions[index]
-            newsquares[f[1]][f[0]] = (
-              <div className={"test " + this.colors[this.state.piece]}></div>
-            )
+            if (f[1] === 0) {
+              console.log("LOOSER!")
+              clearInterval(this.state.interval)
+              this.props.done()
+              break
+            } else {
+              newsquares[f[1]][f[0]] = (
+                <div className={"test " + this.colors[this.state.piece]}></div>
+              )
+            }
           }
           this.setState({ falling: [null, null] })
           this.addblock()
@@ -162,6 +168,7 @@ export default class Board extends React.Component {
       }
     }
   }
+
   checkRow() {
     for (let index = 0; index < this.state.squares.length; index++) {
       const element = this.state.squares[index]
@@ -189,7 +196,6 @@ export default class Board extends React.Component {
     this.setState({ prevRot: 0 })
     const piece = Math.floor(Math.random() * 7)
     if (this.state.falling[0] == null && this.state.falling[1] == null) {
-
       this.setState({ falling: [5, 0], piece: piece, prevRot: 0 })
     }
   }
@@ -197,13 +203,16 @@ export default class Board extends React.Component {
   interval = null // setInterval(this.mover.bind(this), 300)
   paused = true
   pause() {
-    clearInterval(this.interval)
-    this.paused = true
+    clearInterval(this.state.interval)
+    this.setState({ paused: true })
   }
   unpause() {
-    if (this.paused) {
-      this.paused = false
-      this.interval = setInterval(this.mover.bind(this), 300)
+    if (this.state.paused) {
+      this.setState({
+        paused: false,
+        interval: setInterval(this.mover.bind(this), 300),
+      })
+      //   this.interval = setInterval(this.mover.bind(this), 300)
     }
   }
 
@@ -214,27 +223,31 @@ export default class Board extends React.Component {
     else return [-arr[0] + x, -arr[1] + y]
   }
 
-  renderSquare(i) { //helper for makeRow
+  renderSquare(i) {
+    //helper for makeRow
     const h = Math.floor(i / 10)
     const x = i % 10
     return <Square key={i} value={this.state.squares[h][x]} />
   }
 
-  makeRow(l, h) { //helper for makeBoard
+  makeRow(l, h) {
+    //helper for makeBoard
     const result = []
     for (let i = 0; i < l; i++) {
       result.push(this.renderSquare(h * l + i))
     }
     return result
   }
-  makeBoard(Htot) { //create board in beginning of game
+  makeBoard(Htot) {
+    //create board in beginning of game
     const board = []
     for (let index = 0; index < Htot; index++) {
       board.push(<div className="board-row">{this.makeRow(10, index)}</div>)
     }
     return board
   }
-  move = (event) => { //handle keys
+  move = (event) => {
+    //handle keys
     if (this.state.falling[0] !== null) {
       if (event.key === "ArrowRight" && this.state.falling[0] < 9) {
         this.hmov = 1
