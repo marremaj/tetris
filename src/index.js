@@ -23,9 +23,16 @@ class Game extends React.Component {
     const done = this.state.done
     return (
       <div className="game">
-        <h1>TETRIS {this.state.points}</h1>
+        <div class="game-info">
+        <h1>TETRIS</h1>
+        <h2>points: {this.state.points}</h2>
+        </div>
+        <div class="gamearea">
         {done ? (
-          <h1>you lose</h1>
+          <>
+          <h1>You got many points</h1>
+          <button onClick={() => {this.setState({ done: false, points: 0 })}}>AGAIN</button>
+          </>
         ) : (
           <div className="game-board">
             <Board
@@ -35,6 +42,7 @@ class Game extends React.Component {
             />
           </div>
         )}
+        </div>
       </div>
     )
   }

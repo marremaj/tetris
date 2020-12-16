@@ -75,5 +75,17 @@ body {
   }
   
   .game-info {
+    height: 505px;
+    width: 262px;
+    border: 1px solid orchid;
     margin-left: 20px;
+    padding: 5px;
+    box-sizing: border-box;
   }
+  .gamearea {
+    height: 505px;
+    width: 262px;
+    border: 1px solid aqua;
+    box-sizing: border-box;
+  }
+
