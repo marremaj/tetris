@@ -26,6 +26,14 @@ class Game extends React.Component {
         <div class="game-info">
         <h1>TETRIS</h1>
         <h2>points: {this.state.points}</h2>
+        <p>
+          Start the game by clicking on the board and pressing U.<br/>
+          Move block to left and right with arrow keys.<br/>
+          Rotate (space).<br/>
+          Pause (P).<br/>
+          Unpause (U).<br/><br/>
+          GOOD LUCK!
+        </p>
         </div>
         <div class="gamearea">
         {done ? (
